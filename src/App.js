@@ -9,6 +9,7 @@ import './App.css';
 import 'tachyons';
 import Particles from 'react-particles-js';
 import Clarifai from 'clarifai';
+import Register from './components/Register/register';
 
 const app = new Clarifai.App({
   apiKey: 'b1026eae57064b0eaf0e652706f2e1ce'
@@ -21,7 +22,8 @@ class App extends Component {
       input:'',
       imageUrl:'',
       box: {},
-      route: 'signin'
+      route: 'signin',
+      isSignedIn: false
     }
   }
 
@@ -54,6 +56,11 @@ class App extends Component {
   }
 
   onRouteChange = (route) => {
+    if(route === 'signout') {
+      this.setState({isSignedIn: false})
+    } else if(route === 'home') {
+      this.setState({isSignedIn: true});
+    }
     this.setState({route: route});
   }
   render() {
@@ -75,14 +82,20 @@ class App extends Component {
 
         
       />
-        <Navigation onRouteChange={this.onRouteChange}/>
-        { this.state.route === 'signin' ? <Signin onRouteChange={this.onRouteChange}/> : 
-        <div> 
-          <Logo />
-          <Rank />
-          <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-          <FaceRecognition imageUrl={this.state.imageUrl} box={this.state.box}/> 
-        </div>
+        <Navigation onRouteChange={this.onRouteChange} isSignedIn={this.state.isSignedIn}/>
+        { this.state.route === 'home' 
+        ? 
+          <div> 
+            <Logo />
+            <Rank />
+            <ImageLinkForm onInputChange={this.onInputChange} 
+              onButtonSubmit={this.onButtonSubmit}/>
+            <FaceRecognition imageUrl={this.state.imageUrl} 
+              box={this.state.box}/> 
+          </div>
+        : ( this.state.route === 'signin' 
+          ? <Signin onRouteChange={this.onRouteChange}/> 
+          : <Register onRouteChange={this.onRouteChange}/> )
       }
       </div>
     );
